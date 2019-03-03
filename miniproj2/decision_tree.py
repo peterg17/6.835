@@ -23,13 +23,22 @@ gesture_sets = normalize_frames(gesture_sets, num_frames)
 
 samples, labels = [], []
 
+count = 0
 for gs in gesture_sets:
     for seq in gs.sequences:
+        mapped_frames = list(map(lambda x: x.frame, seq.frames))
         sample = np.concatenate(list(map(lambda x: x.frame, seq.frames)))    
+        if count < 2:
+            print("shape of mapped frames: ", np.shape(mapped_frames))
+            count += 1
+            print("shape of np concat frames: ", np.shape(sample))
         samples.append(sample)
         labels.append(int(gs.label))
 
+print("shape of overall training data: ", np.shape(samples))
 X, Y = np.vstack(samples), np.array(labels)
+print("shape of X: ", np.shape(X))
+print("shape of Y: ", np.shape(Y))
 
 X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=ratio, random_state=10)
 
