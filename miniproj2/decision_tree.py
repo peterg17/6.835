@@ -36,7 +36,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=ratio, rand
 
 # 7. CREATE AND TRAIN MODEL
 
-clf = DecisionTreeClassifier(criterion='gini', random_state=10)
+clf = DecisionTreeClassifier(criterion='gini')
 
 clf.fit(X_train, y_train)
 print("num features: ", clf.feature_importances_.size)
