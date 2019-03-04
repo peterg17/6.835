@@ -27,13 +27,16 @@ X = X[p]
 Y = Y[p]
 
 # 10. CREATE AND TRAIN MODEL
-batch_size = 12
+batch_size = 24
 epochs = 100
 latent_dim = 16
 
+
 input_layer = Input(shape=(X.shape[1:]))
 lstm = LSTM(latent_dim)(input_layer)
-dense = Dense(latent_dim, activation='relu')(lstm)
+reverse_lstm = LSTM(latent_dim, go_backwards=True)(input_layer)
+bidirectional_lstm = concatenate([lstm, reverse_lstm])
+dense = Dense(latent_dim, activation='relu')(bidirectional_lstm)
 pred = Dense(len(gesture_sets), activation='softmax')(dense)
 
 model = Model(inputs=input_layer, outputs=pred)
