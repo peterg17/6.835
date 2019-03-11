@@ -168,13 +168,25 @@ var processSpeech = function(transcript) {
     }
 
     else if (gameState.isCpuTurn() && gameState.waitingForPlayer()) {
-      // TODO: 4.5, CPU's turn
       // Detect the player's response to the CPU's shot: hit, miss, you sunk my ..., game over
       // and register the CPU's shot if it was said
-      if (false) {
-        var response = "playerResponse";
+      // TODO: clean up this code a bit...
+      if (userSaid(transcript, ['hit'])) {
+        var response = "hit"; 
         registerCpuShot(response);
-
+        processed = true;
+      } else if (userSaid(transcript, ['miss'])) {
+        var response = "miss";
+        registerCpuShot(response);
+        processed = true;
+      } else if (userSaid(transcript, ['sunk'])) { 
+        //maybe add more words to this...
+        var response = "sunk";
+        registerCpuShot(response);
+        processed = true;
+      } else if (userSaid(transcript, ['game', 'over'])) {
+        var response = "game over";
+        registerCpuShot(response);
         processed = true;
       }
     }
@@ -183,11 +195,11 @@ var processSpeech = function(transcript) {
   return processed;
 };
 
-// TODO: 4.4, Player's turn
 // Generate CPU speech feedback when player takes a shot
 var registerPlayerShot = function() {
-  // TODO: CPU should respond if the shot was off-board
   if (!selectedTile) {
+    generateSpeech("shoot at a valid tile!");
+    return;
   }
 
   // If aiming at a tile, register the player's shot
@@ -199,7 +211,6 @@ var registerPlayerShot = function() {
     // Duplicate shot
     if (!result) return;
 
-    // TODO: Generate CPU feedback in three cases
     // Game over
     if (result.isGameOver) {
       generateSpeech("game over");
@@ -218,13 +229,11 @@ var registerPlayerShot = function() {
     }
 
     if (!result.isGameOver) {
-      // TODO: Uncomment nextTurn to move onto the CPU's turn
-      // nextTurn();
+      nextTurn();
     }
   }
 };
 
-// TODO: 4.5, CPU's turn
 // Generate CPU shot as speech and blinking
 var cpuShot;
 var generateCpuShot = function() {
@@ -233,11 +242,12 @@ var generateCpuShot = function() {
   var tile = cpuShot.get('position');
   var rowName = ROWNAMES[tile.row]; // e.g. "A"
   var colName = COLNAMES[tile.col]; // e.g. "5"
-
-  // TODO: Generate speech and visual cues for CPU shot
+  // speech cue
+  generateSpeech("fire " + rowName + " " + colName);
+  // visual cue
+  blinkTile(tile);
 };
 
-// TODO: 4.5, CPU's turn
 // Generate CPU speech in response to the player's response
 // E.g. CPU takes shot, then player responds with "hit" ==> CPU could then say "AWESOME!"
 var registerCpuShot = function(playerResponse) {
@@ -248,24 +258,25 @@ var registerCpuShot = function(playerResponse) {
   // NOTE: Here we are using the actual result of the shot, rather than the player's response
   // In 4.6, you may experiment with the CPU's response when the player is not being truthful!
 
-  // TODO: Generate CPU feedback in three cases
   // Game over
   if (result.isGameOver) {
+    generateSpeech("game over");
     gameState.endGame("cpu");
     return;
   }
   // Sunk ship
   else if (result.sunkShip) {
     var shipName = result.sunkShip.get('type');
+    generateSpeech("i sunk your " + shipName);
   }
   // Hit or miss
   else {
     var isHit = result.shot.get('isHit');
+    generateSpeech(isHit ? 'yay' : 'darn');
   }
 
   if (!result.isGameOver) {
-    // TODO: Uncomment nextTurn to move onto the player's next turn
-    // nextTurn();
+    nextTurn();
   }
 };
 
