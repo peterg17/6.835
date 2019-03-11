@@ -161,6 +161,7 @@ var processSpeech = function(transcript) {
         var response = transcript;
         registerCpuShot(response);
         processed = true;
+      }
     }
   }
 
@@ -250,4 +251,3 @@ var registerCpuShot = function(playerResponse) {
     nextTurn();
   }
 };
-
