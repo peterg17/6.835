@@ -32,15 +32,12 @@ Leap.loop({ hand: function(hand) {
   // var cursorPosition = [0, 0];
   var cursorPosition = hand.screenPosition();
   cursorPosition[1] = cursorPosition[1] + 200;
-  // console.log("cursor position: " + cursorPosition);
   cursor.setScreenPosition(cursorPosition);
 
   // Get the tile that the player is currently selecting, and highlight it
   selectedTile = getIntersectingTile(cursorPosition);
   if (selectedTile != false) {
     // make sure cursor is actually over a tile
-    // console.log("gets here!");
-    // console.log("tile selected is at row: " + selectedTile.row + " and col: " + selectedTile.col);
     highlightTile(selectedTile, Colors.GREEN);
   }
 
@@ -49,7 +46,6 @@ Leap.loop({ hand: function(hand) {
     background.setContent("<h1>battleship</h1><h3 style='color: #7CD3A2;'>deploy ships</h3>");
     //  Enable the player to grab, move, rotate, and drop ships to deploy them
 
-    // console.log("grab strength is: " + hand.grabStrength);
     if (hand.grabStrength >= 0.95 || hand.pinchStrength >= 0.95) { // can change this threshold
       isGrabbing = true;
     } else {
@@ -60,12 +56,8 @@ Leap.loop({ hand: function(hand) {
     if (!grabbedShip && isGrabbing) {
       shipInfo = getIntersectingShipAndOffset(cursorPosition);
         if (shipInfo != false) {
-          // console.log("system thinks we are selecting a ship!");
           grabbedShip = shipInfo.ship;
           grabbedOffset = shipInfo.offset;
-          // console.log("shp position is: ", grabbedShip);
-          // console.log("offset is: ", grabbedOffset);
-          // console.log("cursor position: ", cursorPosition);
         }
     }
 
@@ -74,7 +66,6 @@ Leap.loop({ hand: function(hand) {
       var normalizedShipPosition = [cursorPosition[0] - grabbedOffset[0], cursorPosition[1] - grabbedOffset[1]];
       grabbedShip.setScreenPosition(normalizedShipPosition);
       shipRollAngle = -hand.roll() - 0.7;
-      // console.log("hand roll angle: " + shipRollAngle);
       grabbedShip.setScreenRotation(shipRollAngle);
     }
 
@@ -138,7 +129,6 @@ Leap.loop({ hand: function(hand) {
 var processSpeech = function(transcript) {
   // Helper function to detect if any commands appear in a string
   var userSaid = function(str, commands) {
-    console.log("commands: " + commands);
     for (var i = 0; i < commands.length; i++) {
       if (str.indexOf(commands[i]) > -1)
         return true;
@@ -150,8 +140,6 @@ var processSpeech = function(transcript) {
   if (gameState.get('state') == 'setup') {
     // Detect the 'start' command, and start the game if it was said
     if (userSaid(transcript, ['start'])) {
-      // console.log("transcript is: " + transcript);
-      // console.log("start speech recognized!");
       gameState.startGame();
       processed = true;
     }
@@ -161,7 +149,6 @@ var processSpeech = function(transcript) {
     if (gameState.isPlayerTurn()) {
       // Detect the 'fire' command, and register the shot if it was said
       if (userSaid(transcript, ['fire'])) {
-        // console.log("fire command recognized!");
         registerPlayerShot();
         processed = true;
       }
@@ -170,25 +157,10 @@ var processSpeech = function(transcript) {
     else if (gameState.isCpuTurn() && gameState.waitingForPlayer()) {
       // Detect the player's response to the CPU's shot: hit, miss, you sunk my ..., game over
       // and register the CPU's shot if it was said
-      // TODO: clean up this code a bit...
-      if (userSaid(transcript, ['hit'])) {
-        var response = "hit"; 
+      if (userSaid(transcript, ['hit', 'miss', 'sunk', 'game over'])) {
+        var response = transcript;
         registerCpuShot(response);
         processed = true;
-      } else if (userSaid(transcript, ['miss'])) {
-        var response = "miss";
-        registerCpuShot(response);
-        processed = true;
-      } else if (userSaid(transcript, ['sunk'])) { 
-        //maybe add more words to this...
-        var response = "sunk";
-        registerCpuShot(response);
-        processed = true;
-      } else if (userSaid(transcript, ['game', 'over'])) {
-        var response = "game over";
-        registerCpuShot(response);
-        processed = true;
-      }
     }
   }
 
@@ -207,7 +179,6 @@ var registerPlayerShot = function() {
     var shot = new Shot({position: selectedTile});
     var result = cpuBoard.fireShot(shot);
 
-    // console.log("result of fired shot: " + JSON.stringify(result));
     // Duplicate shot
     if (!result) return;
 
