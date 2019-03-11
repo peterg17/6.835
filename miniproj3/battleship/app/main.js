@@ -161,7 +161,7 @@ var processSpeech = function(transcript) {
     if (gameState.isPlayerTurn()) {
       // Detect the 'fire' command, and register the shot if it was said
       if (userSaid(transcript, ['fire'])) {
-        console.log("fire command recognized!");
+        // console.log("fire command recognized!");
         registerPlayerShot();
         processed = true;
       }
@@ -195,24 +195,26 @@ var registerPlayerShot = function() {
     var shot = new Shot({position: selectedTile});
     var result = cpuBoard.fireShot(shot);
 
-    console.log("result of fired shot: " + JSON.stringify(result));
+    // console.log("result of fired shot: " + JSON.stringify(result));
     // Duplicate shot
     if (!result) return;
 
     // TODO: Generate CPU feedback in three cases
     // Game over
     if (result.isGameOver) {
-      
+      generateSpeech("game over");
       gameState.endGame("player");
       return;
     }
     // Sunk ship
     else if (result.sunkShip) {
       var shipName = result.sunkShip.get('type');
+      generateSpeech("you sunk my " + shipName);
     }
     // Hit or miss
     else {
       var isHit = result.shot.get('isHit');
+      generateSpeech(isHit ? 'hit' : 'miss');
     }
 
     if (!result.isGameOver) {
