@@ -149,7 +149,7 @@ var processSpeech = function(transcript) {
     // place the ships in a better way
     if (userSaid(transcript, ['place', 'here'])) {
       console.log("got into place here block");
-      var isVertical = userSaid(transcript, ['vertical']);
+      var isVertical = userSaid(transcript, ['vertical', 'vertically']);
       if (userSaid(transcript, ['battleship'])) {
         console.log("got into battleship block");
         moveShip('battleship', isVertical);
