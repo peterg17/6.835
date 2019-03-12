@@ -270,15 +270,13 @@ var registerCpuShot = function(playerResponse) {
 // currently shipType is a string with value 'battleship' or 'patrolBoat'
 var moveShip = function(shipType, isVertical) {
   playerBoard.get('ships').forEach(function(ship) {
-    console.log(ship);
-    console.log("ship.attributes.type: " + ship.attributes.type);
-    console.log("shipType is: " + shipType);
     if (shipType === ship.attributes.type) {
-      console.log("current cursorpos is: " + JSON.stringify(cursorPosition));
-      console.log("systems thinks pointing at tile: " + JSON.stringify(getIntersectingTile(cursorPosition)));
-      ship.setScreenPosition(cursorPosition);
+      var shipPosition = [cursorPosition[0]-200, cursorPosition[1] - 40];
+      ship.setScreenPosition(shipPosition);
       if (isVertical) {
         ship.setScreenRotation(Math.PI/2); //should make ship vertical
+      } else {
+        ship.setScreenRotation(0); //need to still set this to 0 in case stored as vertical already
       }
       placeShip(ship);
       return;
