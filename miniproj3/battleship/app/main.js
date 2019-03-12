@@ -33,7 +33,7 @@ Leap.loop({ hand: function(hand) {
 
   // Use the hand data to control the cursor's screen position
   cursorPosition = hand.screenPosition();
-  cursorPosition[1] = cursorPosition[1] + 200;  
+  cursorPosition[1] = cursorPosition[1] + 600;  
   cursor.setScreenPosition(cursorPosition);
 
   // Get the tile that the player is currently selecting, and highlight it
