@@ -19,6 +19,9 @@ var grabbedOffset = [0, 0];
 var shipInfo = false;
 var shipRollAngle = 0;
 
+// trying to update a global cursor position
+var cursorPosition = [0,0];
+
 // isGrabbing: Is the player's hand currently in a grabbing pose
 var isGrabbing = false;
 
@@ -29,9 +32,8 @@ Leap.loop({ hand: function(hand) {
   unhighlightTiles();
 
   // Use the hand data to control the cursor's screen position
-  // var cursorPosition = [0, 0];
-  var cursorPosition = hand.screenPosition();
-  cursorPosition[1] = cursorPosition[1] + 200;
+  cursorPosition = hand.screenPosition();
+  cursorPosition[1] = cursorPosition[1] + 200;  
   cursor.setScreenPosition(cursorPosition);
 
   // Get the tile that the player is currently selecting, and highlight it
@@ -129,8 +131,9 @@ Leap.loop({ hand: function(hand) {
 var processSpeech = function(transcript) {
   // Helper function to detect if any commands appear in a string
   var userSaid = function(str, commands) {
+    var lowercaseStr = str.toLowerCase();
     for (var i = 0; i < commands.length; i++) {
-      if (str.indexOf(commands[i]) > -1)
+      if (lowercaseStr.indexOf(commands[i]) > -1)
         return true;
     }
     return false;
@@ -142,6 +145,16 @@ var processSpeech = function(transcript) {
     if (userSaid(transcript, ['start'])) {
       gameState.startGame();
       processed = true;
+    }
+    // place the ships in a better way
+    if (userSaid(transcript, ['place', 'here'])) {
+      console.log("got into place here block");
+      if (userSaid(transcript, ['battleship'])) {
+        console.log("got into battleship block");
+        moveShip('battleship');
+      } else if (userSaid(transcript, ['patrol boat'])) {
+        moveShip('patrolBoat');
+      }
     }
   }
 
@@ -250,4 +263,21 @@ var registerCpuShot = function(playerResponse) {
   if (!result.isGameOver) {
     nextTurn();
   }
+};
+
+// function to move ship when using point-to-deploy
+// currently shipType is a string with value 'battleship' or 'patrolBoat'
+var moveShip = function(shipType) {
+  playerBoard.get('ships').forEach(function(ship) {
+    console.log(ship);
+    console.log("ship.attributes.type: " + ship.attributes.type);
+    console.log("shipType is: " + shipType);
+    if (shipType === ship.attributes.type) {
+      console.log("current cursorpos is: " + JSON.stringify(cursorPosition));
+      console.log("systems thinks pointing at tile: " + JSON.stringify(getIntersectingTile(cursorPosition)));
+      ship.setScreenPosition(cursorPosition);
+      placeShip(ship);
+      return;
+    }
+  });
 };
