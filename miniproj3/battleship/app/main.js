@@ -149,11 +149,12 @@ var processSpeech = function(transcript) {
     // place the ships in a better way
     if (userSaid(transcript, ['place', 'here'])) {
       console.log("got into place here block");
+      var isVertical = userSaid(transcript, ['vertical']);
       if (userSaid(transcript, ['battleship'])) {
         console.log("got into battleship block");
-        moveShip('battleship');
+        moveShip('battleship', isVertical);
       } else if (userSaid(transcript, ['patrol boat'])) {
-        moveShip('patrolBoat');
+        moveShip('patrolBoat', isVertical);
       }
     }
   }
@@ -267,7 +268,7 @@ var registerCpuShot = function(playerResponse) {
 
 // function to move ship when using point-to-deploy
 // currently shipType is a string with value 'battleship' or 'patrolBoat'
-var moveShip = function(shipType) {
+var moveShip = function(shipType, isVertical) {
   playerBoard.get('ships').forEach(function(ship) {
     console.log(ship);
     console.log("ship.attributes.type: " + ship.attributes.type);
@@ -276,6 +277,9 @@ var moveShip = function(shipType) {
       console.log("current cursorpos is: " + JSON.stringify(cursorPosition));
       console.log("systems thinks pointing at tile: " + JSON.stringify(getIntersectingTile(cursorPosition)));
       ship.setScreenPosition(cursorPosition);
+      if (isVertical) {
+        ship.setScreenRotation(Math.PI/2); //should make ship vertical
+      }
       placeShip(ship);
       return;
     }
